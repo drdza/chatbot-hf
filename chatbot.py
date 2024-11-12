@@ -46,13 +46,9 @@ if user_input := st.chat_input("¿Qué hay de nuevo?"):
     bot_response = response_data.get("generated_text", "Lo siento, no pude procesar la respuesta.")
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
 
-    with st.chat_message("assistant"):
-        response = st.write_stream(bot_response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
-
 # Muestra el historial de chat
-#for message in st.session_state.messages:
-#    if message["role"] == "user":
-#        st.write(f"**Usuario:** {message['content']}")
-#    else:
-#        st.write(f"**Asistente:** {message['content']}")
+for message in st.session_state.messages:
+    if message["role"] == "user":
+        st.write(f"**Usuario:** {message['content']}")
+    else:
+        st.write(f"**Asistente:** {message['content']}")
