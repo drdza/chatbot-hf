@@ -1,11 +1,13 @@
 import os
 import streamlit as st
-import requests
+from transformers import pipeline
 from dotenv import load_dotenv
 
-# Carga el archivo .env si estás ejecutando localmente
-#load_dotenv(".env")
-api_key = os.getenv("HUGGINGFACE_API_TOKEN")
+# Carga el archivo .env si estás ejecutando localmente (para cualquier otra configuración adicional que necesites)
+load_dotenv(".env")
+
+# Configura el pipeline de transformers para usar GPT-2 localmente
+generator = pipeline("text-generation", model="gpt2")
 
 # Show title and description
 st.title("💬 Chatbot")
@@ -28,22 +30,10 @@ if prompt := st.chat_input("¿Qué hay de nuevo?"):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Llamada a la API de Hugging Face para generar una respuesta
-    headers = {
-        "Authorization": f"Bearer {api_key}"
-    }
-    data = {
-        "inputs": prompt,
-    }
-    response = requests.post(
-        "https://api-inference.huggingface.co/models/openai-community/gpt2",
-        headers=headers,
-        json=data
-    )
+    # Genera la respuesta usando el pipeline de transformers
+    response = generator(prompt, max_length=100, num_return_sequences=1)
+    response_text = response[0]["generated_text"]
 
-    # Procesa la respuesta
-    response_text = response.json().get("generated_text", "Lo siento, no pude procesar la respuesta.")
-    
     # Muestra la respuesta en el chat y la almacena en el estado de sesión
     with st.chat_message("assistant"):
         st.markdown(response_text)
