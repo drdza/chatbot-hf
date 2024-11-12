@@ -8,24 +8,19 @@ load_dotenv()
 api_token = os.getenv("HUGGINGFACE_API_TOKEN")
 
 # Configuración de la app de Streamlit
-st.title("💬 Chatbot con API de Hugging Face")
+st.title("Chatbot con API de Hugging Face")
 st.write("Escribe un mensaje y el chatbot te responderá utilizando la API de Hugging Face.")
 
 # Configura el historial del chat
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "system", "content": "Eres un asistente de IA."}]
-
-# Muestra los mensajes de chat existentes a través de `st.chat_message`.
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+    st.session_state.messages = []
 
 # Entrada del usuario
-if user_input := st.chat_input("¿Qué hay de nuevo?"):
+user_input = st.text_input("Escribe tu mensaje aquí:")
+
+if user_input:
     # Agrega el mensaje del usuario al historial
     st.session_state.messages.append({"role": "user", "content": user_input})
-    with st.chat_message("user"):
-        st.markdown(user_input)
 
     # Llamada a la API de Hugging Face
     headers = {
