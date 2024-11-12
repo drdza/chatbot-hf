@@ -47,7 +47,7 @@ if user_input := st.chat_input("¿Qué hay de nuevo?"):
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
 
     with st.chat_message("assistant"):
-        response = st.write_stream(stream)
+        response = st.write_stream(bot_response)
     st.session_state.messages.append({"role": "assistant", "content": response})
 
 # Muestra el historial de chat
