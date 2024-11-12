@@ -36,7 +36,9 @@ if user_input:
     response = requests.post("https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill", 
                              headers=headers, json=data)
     response_data = response.json()
+    st.warning(response_data)
 
+    
     # Extrae la respuesta y agrégala al historial
     bot_response = response_data.get("generated_text", "Lo siento, no pude procesar la respuesta.")
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
