@@ -27,7 +27,7 @@ st.write(
 
 # Create an OpenAI client.
 client = OpenAI(
-    base_url="https://huggingface.co/openai-community/gpt2",
+    base_url="https://api-inference.huggingface.co/models/openai-community/gpt2",
     api_key=api_key
 )
 
