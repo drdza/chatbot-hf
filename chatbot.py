@@ -28,7 +28,7 @@ st.write(
 # Create an OpenAI client.
 client = OpenAI(
     base_url="https://api-inference.huggingface.co/models/openai-community/gpt2",
-    api_key=api_key
+    api_key=api_key.strip()
 )
 
 # Create a session state variable to store the chat messages. This ensures that the
