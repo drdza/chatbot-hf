@@ -1,51 +1,68 @@
-import streamlit as st
-import requests
 import os
+import streamlit as st
+from openai import OpenAI
 from dotenv import load_dotenv
 
-# Cargar el token de Hugging Face desde .env
-load_dotenv()
-api_token = os.getenv("HUGGINGFACE_API_TOKEN")
 
-# Configuración de la app de Streamlit
-st.title("Chatbot con API de Hugging Face")
-st.write("Escribe un mensaje y el chatbot te responderá utilizando la API de Hugging Face.")
+# Detecta si estamos en Streamlit Cloud o localmente
+#env = os.getenv("GCP_ENV", "local")  # Default a "local" si no está definido
 
-# Configura el historial del chat
+#if env == "prod":
+    #Carga de variables de entorno en deployments en la nube
+#    api_key= os.getenv("GCP_APY_KEY") 
+#    base_url= os.getenv("GCP_BASE_URL")
+#else:
+    #Carga las variables del archivo .env en deployments locales
+#    load_dotenv(".env")
+#    api_key = os.getenv("API_KEY")
+#    base_url = os.getenv("BASE_URL")
+
+api_key = os.getenv("HUGGINGFACE_API_TOKEN")
+
+# Show title and description.
+st.title("💬 Chatbot")
+st.write(
+    "Este es un cliente ligero de chat con IA."
+)
+
+# Create an OpenAI client.
+client = OpenAI(
+    base_url="https://api-inference.huggingface.co/v1/",
+    api_key=api_key
+)
+
+# Create a session state variable to store the chat messages. This ensures that the
+# messages persist across reruns.
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = [{"role": "system", "content": "Eres un asistente de IA."}]
 
-# Entrada del usuario
-user_input = st.text_input("Escribe tu mensaje aquí:")
-
-if user_input:
-    # Agrega el mensaje del usuario al historial
-    st.session_state.messages.append({"role": "user", "content": user_input})
-
-    # Llamada a la API de Hugging Face
-    headers = {
-        "Authorization": f"Bearer {api_token}"
-    }
-    data = {
-        "inputs": {
-            "past_user_inputs": [msg["content"] for msg in st.session_state.messages if msg["role"] == "user"],
-            "generated_responses": [msg["content"] for msg in st.session_state.messages if msg["role"] == "assistant"],
-            "text": user_input
-        }
-    }
-    response = requests.post("https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill", 
-                             headers=headers, json=data)
-    response_data = response.json()
-    st.warning(response_data)
-
-    
-    # Extrae la respuesta y agrégala al historial
-    bot_response = response_data.get("generated_text", "Lo siento, no pude procesar la respuesta.")
-    st.session_state.messages.append({"role": "assistant", "content": bot_response})
-
-# Muestra el historial de chat
+# Display the existing chat messages via `st.chat_message`.
 for message in st.session_state.messages:
-    if message["role"] == "user":
-        st.write(f"**Usuario:** {message['content']}")
-    else:
-        st.write(f"**Asistente:** {message['content']}")
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Create a chat input field to allow the user to enter a message. This will display
+# automatically at the bottom of the page.
+if prompt := st.chat_input("¿Qué hay de nuevo?"):
+
+    # Store and display the current prompt.
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Generate a response using the OpenAI API.
+    stream = client.chat.completions.create(
+        model="facebook/blenderbot-400M-distill",
+        messages=[
+            {"role": m["role"], "content": m["content"]}
+            for m in st.session_state.messages
+        ],
+        max_tokens=500,
+        stream=True,
+    )
+
+    # Stream the response to the chat using `st.write_stream`, then store it in 
+    # session state.
+    with st.chat_message("assistant"):
+        response = st.write_stream(stream)
+    st.session_state.messages.append({"role": "assistant", "content": response})
