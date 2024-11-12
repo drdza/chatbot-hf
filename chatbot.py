@@ -27,7 +27,7 @@ st.write(
 
 # Create an OpenAI client.
 client = OpenAI(
-    base_url="https://api-inference.huggingface.co/v1/",
+    base_url="https://huggingface.co/openai-community/gpt2",
     api_key=api_key
 )
 
@@ -52,7 +52,7 @@ if prompt := st.chat_input("¿Qué hay de nuevo?"):
 
     # Generate a response using the OpenAI API.
     stream = client.chat.completions.create(
-        model="facebook/blenderbot-400M-distill",
+        model="openai-community/gpt2",
         messages=[
             {"role": m["role"], "content": m["content"]}
             for m in st.session_state.messages
