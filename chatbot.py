@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv(".env")
 
 # Configura el pipeline de transformers para usar GPT-2 localmente
-generator = pipeline("question-answering", model="deepset/roberta-base-squad2")
+generator = pipeline("text-generation", model="meta-llama/Llama-3.2-1B")
 
 # Show title and description
 st.title("💬 Chatbot")
