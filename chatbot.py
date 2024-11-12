@@ -52,7 +52,7 @@ if prompt := st.chat_input("¿Qué hay de nuevo?"):
 
     # Generate a response using the OpenAI API.
     stream = client.chat.completions.create(
-        model="gpt2",
+        model="openai-community/gpt2",
         messages=[
             {"role": m["role"], "content": m["content"]}
             for m in st.session_state.messages
