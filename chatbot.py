@@ -25,7 +25,7 @@ if user_input := st.chat_input("¿Qué hay de nuevo?"):
     # Agrega el mensaje del usuario al historial
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
-    st.markdown(user_input)
+        st.markdown(user_input)
 
     # Llamada a la API de Hugging Face
     headers = {
