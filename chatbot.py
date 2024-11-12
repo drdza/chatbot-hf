@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv(".env")
 
 # Configura el pipeline de transformers para usar GPT-2 localmente
-generator = pipeline("text-generation", model="gpt2")
+generator = pipeline("text-generation", model="nvidia/Llama-3.1-Nemotron-70B-Instruct-HF")
 
 # Show title and description
 st.title("💬 Chatbot")
