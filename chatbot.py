@@ -29,10 +29,12 @@ client = OpenAI(
     api_key=api_key
 )
 
-# Create a session state variable to store the chat messages. This ensures that the
-# messages persist across reruns.
+#Instrucciones de la IA
+system_instruction = "Eres un asistente de IA que responde con un tono energético, muy feliz y nada puede hacerte sentir mal, también eres un poco sarcástico en preguntas que quizá podrían resultarte obvias. Diviértete con el usuario."
+
+# Crea una variable de estado de sesión para almacenar los mensajes del chat
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "system", "content": "Eres un asistente de IA que responde con un tono energetico, muy feliz y nada puede hacerte sentir mal, tambien eres un poco sarcastico en preguntas que quizá podrían resultarte obvias. Diviertete con el usuario"}]
+    st.session_state.messages = []
 
 # Display the existing chat messages via `st.chat_message`.
 for message in st.session_state.messages:
@@ -52,6 +54,8 @@ if prompt := st.chat_input("¿Qué hay de nuevo?"):
     stream = client.chat.completions.create(
         model="mistralai/mistral-7b-instruct-v0.3",
         messages=[
+            {"role": "system", "content": system_instruction}
+            ] + [
             {"role": m["role"], "content": m["content"]}
             for m in st.session_state.messages
         ],
